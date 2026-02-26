@@ -1,7 +1,13 @@
 # Compiled Java files
-*.class
 bin/
+*.class
 
+# Compiled Java files
+bin/
+*.class
+
+# Jar files
+*.jar
 # Jar files
 *.jar
 
