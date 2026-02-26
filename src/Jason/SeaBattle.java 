@@ -1,0 +1,184 @@
+package Jason;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Random;
+import javax.sound.sampled.*;
+import java.io.File;
+
+public class SeaBattle extends JFrame implements ActionListener {
+    private JButton[][] grid1 = new JButton[10][10];
+    private JButton[][] grid2 = new JButton[10][10];
+    private String[][] ships1 = new String[10][10];
+    private String[][] ships2 = new String[10][10];
+    private int score1 = 0;
+    private int score2 = 0;
+    private boolean player1Turn = true;
+    private JLabel turnLabel;
+    private JLabel scoreLabel;
+    private String[] shipNames = {"Submarine", "Aircraft", "MotorBoat", "Yacht"};
+
+    public SeaBattle() {
+        setTitle("Professional Battleship - Standalone");
+        setSize(1100, 650);
+        setLayout(new BorderLayout());
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        JPanel center = new JPanel(new GridLayout(1, 2, 30, 0));
+        JPanel p1 = new JPanel(new GridLayout(10, 10));
+        JPanel p2 = new JPanel(new GridLayout(10, 10));
+
+        p1.setBorder(BorderFactory.createTitledBorder("Player 1 Fleet"));
+        p2.setBorder(BorderFactory.createTitledBorder("Player 2 Fleet"));
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                grid1[i][j] = createButton();
+                grid2[i][j] = createButton();
+                grid1[i][j].addActionListener(this);
+                grid2[i][j].addActionListener(this);
+                p1.add(grid1[i][j]);
+                p2.add(grid2[i][j]);
+            }
+        }
+
+        center.add(p1);
+        center.add(p2);
+
+        turnLabel = new JLabel("Player 1 Turn", JLabel.CENTER);
+        turnLabel.setFont(new Font("Arial", Font.BOLD, 22));
+        scoreLabel = new JLabel("Score → P1: 0 | P2: 0", JLabel.CENTER);
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 18));
+
+        add(turnLabel, BorderLayout.NORTH);
+        add(center, BorderLayout.CENTER);
+        add(scoreLabel, BorderLayout.SOUTH);
+
+        placeShipsRandom(ships1);
+        placeShipsRandom(ships2);
+
+        setVisible(true);
+    }
+
+    private JButton createButton() {
+        JButton b = new JButton();
+        b.setBackground(new Color(40, 90, 140)); // ocean blue
+        b.setForeground(Color.WHITE);
+        b.setFont(new Font("Arial", Font.BOLD, 9));
+        return b;
+    }
+
+    private void placeShipsRandom(String[][] ships) {
+        Random r = new Random();
+        for (String s : shipNames) {
+            int row = r.nextInt(10);
+            int col = r.nextInt(10);
+            ships[row][col] = s;
+        }
+    }
+
+    private void playSound(String fileName) {
+        try {
+            // Updated path to work with your project's DevOps-style structure
+            java.net.URL url = getClass().getResource("images/" + fileName);
+            if (url != null) {
+                AudioInputStream audio = AudioSystem.getAudioInputStream(url);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audio);
+                clip.start();
+            }
+        } catch (Exception e) {
+            System.out.println("Sound file missing: " + fileName);
+        }
+    }
+
+    private void animateHit(JButton btn) {
+        Timer t = new Timer(80, null);
+        t.addActionListener(new ActionListener() {
+            int count = 0;
+            public void actionPerformed(ActionEvent e) {
+                btn.setBackground(count % 2 == 0 ? Color.GRAY : Color.RED);
+                count++;
+                if (count == 8) {
+                    t.stop();
+                    btn.setBackground(Color.RED);
+                    btn.setText("💥");
+                }
+            }
+        });
+        t.start();
+    }
+
+    private void animateMiss(JButton btn) {
+        btn.setBackground(new Color(20, 50, 90));
+        btn.setText("•");
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (player1Turn && e.getSource() == grid2[i][j]) {
+                    if (ships2[i][j] != null) {
+                        animateHit(grid2[i][j]);
+                        playSound("hit.wav");
+                        score1++;
+                    } else {
+                        animateMiss(grid2[i][j]);
+                        playSound("miss.wav");
+                    }
+                    grid2[i][j].setEnabled(false);
+                    player1Turn = false;
+                } else if (!player1Turn && e.getSource() == grid1[i][j]) {
+                    if (ships1[i][j] != null) {
+                        animateHit(grid1[i][j]);
+                        playSound("hit.wav");
+                        score2++;
+                    } else {
+                        animateMiss(grid1[i][j]);
+                        playSound("miss.wav");
+                    }
+                    grid1[i][j].setEnabled(false);
+                    player1Turn = true;
+                }
+            }
+        }
+
+        turnLabel.setText(player1Turn ? "Player 1 Turn" : "Player 2 Turn");
+        scoreLabel.setText("Score → P1: " + score1 + " | P2: " + score2);
+
+        if (score1 == 4) {
+            JOptionPane.showMessageDialog(this, "Player 1 Wins!");
+            restartGame();
+        } else if (score2 == 4) {
+            JOptionPane.showMessageDialog(this, "Player 2 Wins!");
+            restartGame();
+        }
+    }
+
+    private void restartGame() {
+        score1 = 0;
+        score2 = 0;
+        player1Turn = true;
+        ships1 = new String[10][10];
+        ships2 = new String[10][10];
+        placeShipsRandom(ships1);
+        placeShipsRandom(ships2);
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                grid1[i][j].setText("");
+                grid2[i][j].setText("");
+                grid1[i][j].setEnabled(true);
+                grid2[i][j].setEnabled(true);
+                grid1[i][j].setBackground(new Color(40, 90, 140));
+                grid2[i][j].setBackground(new Color(40, 90, 140));
+            }
+        }
+        scoreLabel.setText("Score → P1: 0 | P2: 0");
+        turnLabel.setText("Player 1 Turn");
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new SeaBattle());
+    }
+}

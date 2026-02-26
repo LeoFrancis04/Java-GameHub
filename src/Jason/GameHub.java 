@@ -1,0 +1,59 @@
+package Jason;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+
+public class GameHub extends JFrame {
+    private JTabbedPane tabbedPane;
+
+    public GameHub() {
+        setTitle("Java Game Hub - Tabbed Edition");
+        setSize(1100, 750);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // Create the Tabbed Pane
+        tabbedPane = new JTabbedPane();
+        tabbedPane.setFont(new Font("Arial", Font.BOLD, 14));
+
+        // 1. Add Maths Quiz
+        tabbedPane.addTab("🧮 Maths Quiz", new MathsQuizPanel());
+
+        // 2. Add Sea Battle
+        tabbedPane.addTab("⚓ Sea Battle", new SeaBattlePanel());
+
+        // 3. Add Tic Tac Toe
+        tabbedPane.addTab("⭕ Tic Tac Toe", new TicTacToePanel());
+
+        // 4. Add 2P Shooter (Using the updated Panel)
+        TwoPlayerShooterPanel shooter = new TwoPlayerShooterPanel();
+        tabbedPane.addTab("🔫 Shooter", shooter);
+
+        // 5. Add Flappy Bird (Using the updated Panel)
+        FlappyBird flappy = new FlappyBird();
+        tabbedPane.addTab("🐦 Flappy Bird", flappy);
+
+        // ===== KEYBOARD FOCUS FIX =====
+        // This listener detects when a tab is changed and requests focus
+        // so games like Flappy Bird and Shooter work without clicking inside first.
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                Component selected = tabbedPane.getSelectedComponent();
+                if (selected != null) {
+                    selected.requestFocusInWindow();
+                }
+            }
+        });
+
+        add(tabbedPane);
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        // Run the GUI on the Event Dispatch Thread for thread safety
+        SwingUtilities.invokeLater(() -> new GameHub());
+    }
+}

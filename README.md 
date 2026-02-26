@@ -1,0 +1,88 @@
+# GameHub Java
+
+
+### Folder Structure
+
+```
+GameHub/                              ← Git repo root
+│
+├── .gitignore                        ← Provided at end of this guide
+├── README.md                         ← Optional description
+│
+├── src/
+│   └── Jason/                        ← Java package (must match "package Jason;")
+│       │
+│       ├── MainLauncher.java         ← MAIN FILE — runs the whole app (sidebar UI)
+│       ├── GameHub.java              ← Alternative tabbed launcher (keep both)
+│       │
+│       ├── MathsQuiz.java            ← Standalone (testing only)
+│       ├── MathsQuizPanel.java       ← ✅ Used in launcher (BUG FIXED)
+│       │
+│       ├── SeaBattle.java            ← Standalone (testing only)
+│       ├── SeaBattlePanel.java       ← ✅ Used in launcher
+│       │
+│       ├── TicTacToe.java            ← Standalone (testing only)
+│       ├── TicTacToePanel.java       ← ✅ Used in launcher
+│       │
+│       ├── FlappyBird.java           ← ✅ Used in launcher (ADD package Jason;)
+│       │                                 (ADD Flappy.jpeg as bird face)
+│       │
+│       ├── TwoPlayerShooter.java     ← Standalone (testing only, ADD package Jason;)
+│       ├── TwoPlayerShooterPanel.java ← ✅ NEW FILE — used in launcher
+│       │                                  (uses Gun1.jpeg, Gun2.jpeg)
+│       │
+│       └── images/                   ← ALL image + audio assets go HERE
+│           ├── Flappy.jpeg           ← Bird sprite (friend's face photo)
+│           ├── Gun1.jpeg             ← Player 1 shooter sprite
+│           ├── Gun2.jpeg             ← Player 2 shooter sprite
+│           ├── ship.png              ← Any small PNG for sea battle hits
+│           ├── hit.wav               ← Sound for sea battle hit
+│           └── miss.wav              ← Sound for sea battle miss
+│
+└── bin/                              ← Auto-created when compiling (DO NOT edit)
+    └── Jason/
+        └── *.class files go here
+```
+
+### Step 1 — Install Java Extension Pack in VS Code
+1. Open VS Code
+2. Press `Ctrl+Shift+X` to open Extensions
+3. Search: **Extension Pack for Java** (by Microsoft)
+4. Click Install — this installs 6 extensions at once:
+   - Language Support for Java
+   - Debugger for Java
+   - Maven for Java
+   - Project Manager for Java
+   - Test Runner
+   - IntelliCode
+
+### Step 2 — Install JDK if not already done
+**Windows:**
+- Download JDK 17 from: https://adoptium.net
+- Install with default settings
+- VS Code will auto-detect it
+
+**Verify in terminal:**
+```bash
+java -version
+javac -version
+```
+Both should show version 17 or higher.
+
+### Step 3 — Open the Project
+1. `File → Open Folder` → select your `GameHub/` folder
+2. VS Code will detect Java files and show "Java Projects" in the Explorer sidebar
+3. It may ask to set up — click "Yes"
+
+### Step 4 — VS Code `settings.json` for Java source path
+Press `Ctrl+Shift+P` → type "Open Workspace Settings JSON" → add:
+
+```json
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": []
+}
+```
+
+This tells VS Code: source code is in `src/`, compile output goes to `bin/`.
